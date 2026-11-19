@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Owen ❤️</title>
+  <!-- Skulpt: runs standard Python + turtle directly in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    label { font-weight: 600; font-size: 14px; }
+    input[type="range"] { accent-color: #ff2a4b; cursor: pointer; }
+    button {
+      background: #ff2a4b;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #e02240; }
+    #mycanvas {
+      border: 2px solid #2a2a2a;
+      border-radius: 12px;
+      background: #121212;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <label for="speedSlider">Speed: <span id="speedVal">3</span></label>
+    <input type="range" id="speedSlider" min="1" max="10" value="3" />
+    <button id="instantBtn">Instant (0)</button>
+    <button id="replayBtn">Replay ❤️</button>
+  </div>
+
+  <div id="mycanvas"></div>
+
+  <!-- Your Python Turtle Code -->
+  <script type="text/python" id="pythonCode">
+import turtle
+
+screen = turtle.Screen()
+screen.bgcolor("#121212")
+screen.setup(width=760, height=420)
+
+pen = turtle.Turtle()
+pen.shape("turtle")
+pen.color("#FF2A4B")
+pen.pensize(6)
+pen.speed(INITIAL_SPEED)
+
+def jump(x, y):
+    pen.penup()
+    pen.goto(x, y)
+    pen.pendown()
+
+def draw_I(x, y):
+    jump(x, y + 60)
+    pen.setheading(0)
+    pen.forward(30)
+    jump(x + 15, y + 60)
+    pen.setheading(270)
+    pen.forward(60)
+    jump(x, y)
+    pen.setheading(0)
+    pen.forward(30)
+
+def draw_L(x, y):
+    jump(x, y + 60)
+    pen.setheading(270)
+    pen.forward(60)
+    pen.setheading(0)
+    pen.forward(34)
+
+def draw_O(x, y):
+    jump(x + 20, y)
+    pen.setheading(0)
+    pen.circle(30)
+
+def draw_V(x, y):
+    jump(x, y + 60)
+    pen.goto(x + 18, y)
+    pen.goto(x + 36, y + 60)
+
+def draw_E(x, y):
+    jump(x, y)
+    pen.setheading(90)
+    pen.forward(60)
+    pen.setheading(0)
+    pen.forward(34)
+    jump(x, y + 30)
+    pen.forward(26)
+    jump(x, y)
+    pen.forward(34)
+
+def draw_Y(x, y):
+    jump(x, y + 60)
+    pen.goto(x + 18, y + 30)
+    pen.goto(x + 36, y + 60)
+    jump(x + 18, y + 30)
+    pen.setheading(270)
+    pen.forward(30)
+
+def draw_U(x, y):
+    jump(x, y + 60)
+    pen.setheading(270)
+    pen.forward(42)
+    pen.circle(18, 180)
+    pen.forward(42)
+
+def draw_heart(x, y):
+    pen.color("#FF2A4B", "#FF2A4B")
+    jump(x, y)
+    pen.begin_fill()
+    pen.setheading(140)
+    pen.forward(34)
+    pen.circle(-17, 200)
+    pen.setheading(60)
+    pen.circle(-17, 200)
+    pen.forward(34)
+    pen.end_fill()
+
+# Draw "I LOVE YOU" + Heart
+draw_I(-315, -10)
+draw_L(-240, -10)
+draw_O(-175, -10)
+draw_V(-105, -10)
+draw_E(-48, -10)
+draw_Y(28, -10)
+draw_O(95, -10)
+draw_U(162, -10)
+draw_heart(255, -5)
+
+pen.hideturtle()
+jump(0, -85)
+pen.color("white")
+pen.write("Made just for Owen ❤️", align="center", font=("Arial", 15, "italic"))
+  </script>
+
+  <script>
+    let currentSpeed = 3;
+    let runId = 0;
+
+    function builtinRead(x) {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+        throw "File not found: '" + x + "'";
+      }
+      return Sk.builtinFiles["files"][x];
+    }
+
+    function runTurtle(speed) {
+      runId++;
+      const thisRun = runId;
+      document.getElementById("mycanvas").innerHTML = "";
+      const rawCode = document.getElementById("pythonCode").textContent;
+      const code = rawCode.replace("INITIAL_SPEED", speed);
+
+      Sk.configure({ read: builtinRead });
+      (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = "mycanvas";
+
+      Sk.misceval.asyncToPromise(() => {
+        if (thisRun !== runId) return;
+        return Sk.importMainWithBody("<stdin>", false, code, true);
+      }).catch(err => console.error(err.toString()));
+    }
+
+    const slider = document.getElementById("speedSlider");
+    const speedVal = document.getElementById("speedVal");
+
+    slider.addEventListener("input", () => {
+      currentSpeed = parseInt(slider.value, 10);
+      speedVal.textContent = currentSpeed;
+      runTurtle(currentSpeed);
+    });
+
+    document.getElementById("instantBtn").addEventListener("click", () => {
+      currentSpeed = 0;
+      speedVal.textContent = "0 (Max)";
+      runTurtle(0);
+    });
+
+    document.getElementById("replayBtn").addEventListener("click", () => {
+      runTurtle(currentSpeed);
+    });
+
+    // Start drawing on page load
+    runTurtle(currentSpeed);
+  </script>
+</body>
+</html>
